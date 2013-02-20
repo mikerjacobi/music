@@ -1,0 +1,34 @@
+Tue Feb 19 21:54:31 
+Tue Feb 19 21:54:31 warning: 32-bit servers don't have journaling enabled by default. Please use --journal if you want durability.
+Tue Feb 19 21:54:31 
+Tue Feb 19 21:54:31 [initandlisten] MongoDB starting : pid=10663 port=27017 dbpath=datadir 32-bit host=ubuntu
+Tue Feb 19 21:54:31 [initandlisten] 
+Tue Feb 19 21:54:31 [initandlisten] ** NOTE: when using MongoDB 32 bit, you are limited to about 2 gigabytes of data
+Tue Feb 19 21:54:31 [initandlisten] **       see http://blog.mongodb.org/post/137788967/32-bit-limitations
+Tue Feb 19 21:54:31 [initandlisten] **       with --journal, the limit is lower
+Tue Feb 19 21:54:31 [initandlisten] 
+Tue Feb 19 21:54:31 [initandlisten] db version v2.0.4, pdfile version 4.5
+Tue Feb 19 21:54:31 [initandlisten] git version: nogitversion
+Tue Feb 19 21:54:31 [initandlisten] build info: Linux roseapple 2.6.24-28-server #1 SMP Wed Aug 18 21:17:51 UTC 2010 i686 BOOST_LIB_VERSION=1_46_1
+Tue Feb 19 21:54:31 [initandlisten] options: { dbpath: "datadir" }
+Tue Feb 19 21:54:31 [initandlisten] exception in initAndListen: 10310 Unable to acquire lock for lockfilepath: datadir/mongod.lock, terminating
+Tue Feb 19 21:54:31 dbexit: 
+Tue Feb 19 21:54:31 [initandlisten] shutdown: going to close listening sockets...
+Tue Feb 19 21:54:31 [initandlisten] shutdown: going to flush diaglog...
+Tue Feb 19 21:54:31 [initandlisten] shutdown: going to close sockets...
+Tue Feb 19 21:54:31 [initandlisten] shutdown: waiting for fs preallocator...
+Tue Feb 19 21:54:31 [initandlisten] shutdown: closing all files...
+Tue Feb 19 21:54:31 [initandlisten] closeAllFiles() finished
+Tue Feb 19 21:54:31 dbexit: really exiting Tue Feb 19 21:54:32 [initandlisten] connection accepted from 127.0.0.1:59566 #4
+Tue Feb 19 21:54:50 [clientcursormon] mem (MB) res:12 virt:81 mapped:0
+Tue Feb 19 21:59:50 [clientcursormon] mem (MB) res:12 virt:81 mapped:0
+Tue Feb 19 22:02:09 [initandlisten] connection accepted from 127.0.0.1:59569 #5
+Tue Feb 19 22:02:09 [conn5] build index lists.2 { _id: 1 }
+Tue Feb 19 22:02:09 [conn5] build index done 0 records 0 secs
+Tue Feb 19 22:02:50 [clientcursormon] mem (MB) res:28 virt:114 mapped:32
+Tue Feb 19 22:03:18 [initandlisten] connection accepted from 127.0.0.1:59570 #6
+Tue Feb 19 22:07:50 [clientcursormon] mem (MB) res:28 virt:115 mapped:32
+Tue Feb 19 22:12:50 [clientcursormon] mem (MB) res:28 virt:115 mapped:32
+Tue Feb 19 22:17:50 [clientcursormon] mem (MB) res:28 virt:115 mapped:32
+Tue Feb 19 22:22:51 [clientcursormon] mem (MB) res:28 virt:115 mapped:32
+Tue Feb 19 22:27:51 [clientcursormon] mem (MB) res:28 virt:115 mapped:32
