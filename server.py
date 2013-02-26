@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import cherrypy
 from pymongo import *
 import os
@@ -20,6 +21,33 @@ def footer():
         f=open('pages/footer.html','r')
         for l in f: output+=l
         return output
+
+class Template(object):
+	def index(self):
+		output=''
+		pageurl=webpageDirectory+''
+        	f=open(pageurl,'r')
+		for l in f:
+                        if 'headergoeshere' in l: output+=header()
+                        elif 'footergoeshere' in l: output+=footer()
+                        else: output+=l
+                return output
+        index.exposed=True
+
+class Load(object):
+        def index(selfi, musiclist=None):
+		if musiclist!=None:
+			musiclist=str(musiclist)
+			print musiclist
+                output=''
+                f=open(webpageDirectory+'load.html','r')
+                for l in f:
+                        if 'headergoeshere' in l: output+=header()
+                        elif 'footergoeshere' in l: output+=footer()
+                        else: output+=l
+                return output
+        index.exposed=True
+		
 
 class Lists(object):
 	def index(self,name=None,url=None):
@@ -72,6 +100,7 @@ class Index(object):
 root=Index()
 root.convert=Convert()
 root.lists=Lists()
+root.load=Load()
 
 cherrypy.config.update({'server.socket_host':'0.0.0.0','server.socket_port':8080,'tools.sessions.on':True})
 cherrypy.quickstart(root)
