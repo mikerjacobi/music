@@ -10,6 +10,8 @@ time.sleep(1)
 webpageDirectory="pages/"
 c=Connection()
 
+
+
 def header():
 	output=''
 	f=open('pages/header.html','r')
@@ -22,66 +24,100 @@ def footer():
         for l in f: output+=l
         return output
 
-class Template(object):
-	def index(self):
-		output=''
-		pageurl=webpageDirectory+''
-        	f=open(pageurl,'r')
-		for l in f:
+class Index(object):
+	def verifyUser(self):
+		verified=0
+		try: 
+			cherrypy.session['login']
+			verified=1
+		except:	
+			pass
+		return verified
+
+	def index(self,uname=None,pword=None,redirect=0):
+                loggedIn=0
+                if uname!=None:
+			cherrypy.session.clear()
+                        lookup=list(c['data']['users'].find({'username':str(uname),'password':str(pword)}))
+                        if len(lookup)==1:
+				cherrypy.lib.sessions.init(name=str(uname))
+                                print 'FOUND USER %s'%(str(lookup[0]['username']))
+                                cherrypy.session['login']=str(uname)
+                                loggedIn=1
+                        else:
+                                loggedIn=2
+                output=''
+                pageurl=webpageDirectory+'login.html'
+                f=open(pageurl,'r')
+                for l in f:
                         if 'headergoeshere' in l: output+=header()
                         elif 'footergoeshere' in l: output+=footer()
+                        elif 'name=content' in l:
+                                output+=l
+				if redirect: output+="<font color='red'> Please log in.</font><br>"
+                                if loggedIn==1: output+='%s, you are logged in <br>'%(str(uname))
+                                elif loggedIn==2: output+='<font color="red"> login failed.</font><br>'
                         else: output+=l
                 return output
         index.exposed=True
 
-class Session(object):
-	def index(self, sesh=None):
-		if sesh!=None: 
-			sesh=str(sesh)
-			cherrypy.session['sesh'] = sesh
-			print 'sesh',cherrypy.session.get('sesh')
-		output=''
-		pageurl=webpageDirectory+'session.html'
-        	f=open(pageurl,'r')
-		for l in f:
+        def create(self,uname=None,pword=None):
+                userAdded=0
+                if uname!=None:
+                        c['data']['users'].insert({'username':str(uname),'password':str(pword)})
+                        userAdded=1
+
+                output=''
+                pageurl=webpageDirectory+'login.html'
+                f=open(pageurl,'r')
+                for l in f:
                         if 'headergoeshere' in l: output+=header()
                         elif 'footergoeshere' in l: output+=footer()
-			elif 'showsesh' in l:	
-				if sesh!=None: 
-					output+='your session variable is %s'%(cherrypy.session.get('sesh'))
+                        elif 'name=content' in l:
+                                output+=l
+                                if userAdded==1: output+='user: %s added.'%(str(uname))
                         else: output+=l
                 return output
-        index.exposed=True
+        create.exposed=True
 
-class Load(object):
-        def index(selfi, musiclist=None):
-		if musiclist!=None:
-			musiclist=str(musiclist)
-			print musiclist
+
+	def load(self, musiclist=None):
+		verified=self.verifyUser()
+		if not verified: return self.index(redirect=1) 
+
+                if musiclist!=None:
+                        musiclist=str(musiclist)
+                        print musiclist
                 output=''
                 f=open(webpageDirectory+'load.html','r')
                 for l in f:
                         if 'headergoeshere' in l: output+=header()
                         elif 'footergoeshere' in l: output+=footer()
-			elif 'loadlist' in l:
-				if musiclist==None: continue
-				playlist=list(c['lists'][musiclist].find())
-				for i in range(len(playlist)):
-					name=playlist[i]['song']
-					artist=playlist[i]['artist']
-					url=playlist[i]['url']
-					
-					output+="%d: <a href=%s>%s by %s</a>  <br>\n"%(i+1, url,name,artist)
-					#for metadata in song:
-						#print metadata
-						#output+=str(metadata)
+                        elif 'name=content' in l:
+                                output+=l
+                                try: output+='Hello %s'%cherrypy.session['login']
+                                except: pass
+
+                        elif 'loadlist' in l:
+                                if musiclist==None: continue
+                                playlist=list(c['lists'][musiclist].find())
+                                for i in range(len(playlist)):
+                                        name=playlist[i]['song']
+                                        artist=playlist[i]['artist']
+                                        url=playlist[i]['url']
+
+                                        output+="%d: <a href=%s>%s by %s</a>  <br>\n"%(i+1, url,name,artist)
+                                        #for metadata in song:
+                                                #print metadata
+                                                #output+=str(metadata)
                         else: output+=l
                 return output
-        index.exposed=True
-		
+        load.exposed=True
 
-class Lists(object):
-	def index(self,listname=None,url=None,song=None,artist=None):
+	def lists(self,listname=None,url=None,song=None,artist=None):
+		verified=self.verifyUser()
+                if not verified: return self.index(redirect=1) 
+
 		added=0
 		if listname!=None and url!=None and song!=None and artist!=None:
 			listname,url,song,artist=str(listname),str(url),str(song),str(artist)
@@ -105,10 +141,12 @@ class Lists(object):
 				output+='added '+song+' to '+listname+'!<br>'	
 			else: output+=l
 		return output
-	index.exposed=True
+	lists.exposed=True
+	
+	def convert(self, url=None):
+		verified=self.verifyUser()
+                if not verified: return self.index(redirect=1)
 
-class Convert(object):
-	def index(self, url=None):
 		output=''
                 f=open(webpageDirectory+'convert.html','r')
                 for l in f:
@@ -120,30 +158,57 @@ class Convert(object):
                         elif 'footergoeshere' in l: output+=footer()
 			else: output+=l
                 return output
-	index.exposed = True
+	convert.exposed = True
+
+
 	
 
-class Index(object):
+		
+
+
+'''
+class Template(object):
 	def index(self):
 		output=''
-		f=open(webpageDirectory+'index.html','r')
+		pageurl=webpageDirectory+''
+        	f=open(pageurl,'r')
 		for l in f:
-			if 'headergoeshere' in l: output+=header()
+                        if 'headergoeshere' in l: output+=header()
                         elif 'footergoeshere' in l: output+=footer()
-			else: output+=l
-		return output
-	index.exposed = True
+                        else: output+=l
+                return output
+        index.exposed=True
 
+class Posttest(object):
+	def index(self,login=None):
+		if login!=None:
+			print 'test',str(login)
+		output=''
+		pageurl=webpageDirectory+'posttest.html'
+        	f=open(pageurl,'r')
+		for l in f:
+                        if 'headergoeshere' in l: output+=header()
+                        elif 'footergoeshere' in l: output+=footer()
+                        else: output+=l
+                return output
+        index.exposed=True
+'''
+
+	
 
 root=Index()
-root.convert=Convert()
-root.lists=Lists()
-root.load=Load()
-root.session=Session()
+#root.login=Login()
+#root.posttest=Posttest()
+#root.convert=Convert()
+#root.lists=Lists()
+#root.load=Load()
+#root.session=Session()
 
 cherrypy.config.update({'server.socket_host':'0.0.0.0',
 			'server.socket_port':8080,
 			'tools.sessions.on':True,
-			
+			#'tools.sessions.storage_type':"file",
+			#'tools.sessions.storage_path':"/var/www/music/datadir/cherry_session",
+			#'tools.sessions.timeout':60
 			})
 cherrypy.quickstart(root)
