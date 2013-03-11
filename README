@@ -1,1 +1,4 @@
-123455555
+dependencies:
+1) masonry: http://masonry.desandro.com/index.html
+2) tubeplayer: http://www.tikku.com/jquery-youtube-tubeplayer-plugin#tubeplayer_tutorial_1
+3) youtube api: https://developers.google.com/youtube/js_api_reference#Overview

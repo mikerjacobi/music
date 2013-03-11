@@ -1,0 +1,61 @@
+<html>
+	<head>
+		<title> My Lists </title>
+		<link href="http://fonts.googleapis.com/css?family=Oswald" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" type="text/css" href="http://www.jacobra.com/style.css" />
+		<script type="text/javascript" src="http://www.jacobra.com/jquery-1.7.1.min.js"></script>
+                <script type="text/javascript" src="http://www.jacobra.com/jquery.dropotron-1.0.js"></script>
+	</head>
+
+	<body>
+
+		<div id="wrapper">
+		headergoeshere
+                <div id="page">
+                <div id="content">
+                <div class="box">
+                <h2>My Lists</h2>
+                <p name=content>
+		<div id="container" class="clearfix">
+		
+		<div class="box col1">
+		<h4>Your Lists: </h4>
+		viewlists	
+		</div>
+		<div class="box col2">
+		<h4>Create/Add to List:</h4>
+		<form id="/mylists" method="POST">
+			list name: <input type="text" name="listname" autocomplete="off"><br>
+			url to add: <input type="text" name="url" autocomplete="off"><br>
+                        song name:<input type="text" name="song" autocomplete="off"><br>
+                        artist: <input type="text" name="artist" autocomplete="off"><br>
+                        <input type="submit" value="add!">
+		</form>	
+		</div>
+		<div class="box col1">
+		<iframe src="/player" width=301 height=40 frameborder=0> </iframe>
+		</div>
+
+		</div>
+                </p>
+		
+                </div>
+                </div>
+                <br class="clearfix" />
+            	</div>
+		footergoeshere
+        	</div>
+
+		<script src="http://www.jacobra.com/jquery.masonry.min.js"></script>
+		<script>
+  		$(function(){
+    	
+    		$('#container').masonry({
+    	  		itemSelector: '.box',
+    	  		columnWidth: 300
+		});
+	    
+	 	});
+		</script>
+	</body>
+</html>

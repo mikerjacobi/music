@@ -80,6 +80,59 @@ class Index(object):
                 return output
         create.exposed=True
 
+	def mylists(self, listname=None,url=None,song=None,artist=None):
+		verified=self.verifyUser()
+                if not verified: return self.index(redirect=1)
+
+		listAdded=0
+		user=cherrypy.session['login']
+		if listname!=None and url!=None and song!=None and artist!=None:	
+			listAdded=1
+			listname,url,song,artist=str(listname),str(url),str(song),str(artist)
+			c[user]['lists'][listname].insert({"url":url,"song":song,"artist":artist})
+			
+		pageurl=webpageDirectory+'mylists.html'
+		output=''
+		f=open(pageurl,'r')
+		for l in f:
+			if 'headergoeshere' in l: output+=header()
+                        elif 'footergoeshere' in l: output+=footer()
+                        elif 'name=content' in l:
+				output+=l
+				#output+="hello %s<br>"%(user)
+				#if listAdded: output+="added %s to %s<br>"%(song,listname)
+						
+			elif 'viewlists' in l:
+				playlists=c[user].collection_names()
+#list(c[user]['lists'].find())
+				if len(playlists)==0: output+="<b> None<br></b>"
+				else:
+					for playlist in playlists:
+						if playlist=='system.indexes':continue
+						output+="<b>%s</b><br>"%(playlist.split('.')[1])
+						songs=list(c[user][playlist].find())
+						i=0
+						for song in songs:
+							name=song['song']
+        	                                        artist=song['artist']
+	                                                url=song['url']
+                	                                output+="\t %d: <a href=%s>%s by %s</a>  <br>\n"%(i+1, url,name,artist)
+							i+=1
+						output+='<br>'
+
+			else: output+=l
+		return output
+	mylists.exposed=True
+
+	def player(self):
+		output=''
+		f=open(webpageDirectory+'player.html','r')
+		for l in f:
+			output+=l
+		return output
+	player.exposed=True
+	
+
 
 	def load(self, musiclist=None):
 		verified=self.verifyUser()
