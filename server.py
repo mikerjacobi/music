@@ -80,7 +80,7 @@ class Index(object):
                 return output
         create.exposed=True
 
-	def mylists(self, listname=None,url=None,song=None,artist=None):
+	def mylists(self, listname=None,url=None,song=None,artist=None,playing=None,playlist=None,songNumber=None):
 		verified=self.verifyUser()
                 if not verified: return self.index(redirect=1)
 
@@ -90,6 +90,13 @@ class Index(object):
 			listAdded=1
 			listname,url,song,artist=str(listname),str(url),str(song),str(artist)
 			c[user]['lists'][listname].insert({"url":url,"song":song,"artist":artist})
+		if playing!=None:
+			cherrypy.session['playing']=str(playing)
+		if playlist!=None:
+			cherrypy.session['playlist']=str(playlist)
+		if songNumber!=None:
+			cherrypy.session['songNumber']=str(songNumber)
+
 			
 		pageurl=webpageDirectory+'mylists.html'
 		output=''
@@ -115,7 +122,8 @@ class Index(object):
 						for song in songs:
 							name=song['song']
         	                                        artist=song['artist']
-	                                                url=song['url']
+	                                                songid=song['url'].split('=')[1]
+							url="http://jacobra.com:8080/mylists?playing=%s&playlist=%s&songNumber=%d"%(songid,playlist,i)
                 	                                output+="\t %d: <a href=%s>%s by %s</a>  <br>\n"%(i+1, url,name,artist)
 							i+=1
 						output+='<br>'
@@ -125,10 +133,41 @@ class Index(object):
 	mylists.exposed=True
 
 	def player(self):
+		verified=self.verifyUser()
+                if not verified: return self.index(redirect=1)
+		try: cherrypy.session['playlist']
+		except: return ''
+
+
+
 		output=''
 		f=open(webpageDirectory+'player.html','r')
 		for l in f:
-			output+=l
+			if 'initialVideo:' in l:
+				#output+='initialVideo: "%s",\n'%(cherrypy.session['playing'])
+				output+='initialVideo: songs[%s],\n'%(cherrypy.session['songNumber'])
+			elif 'infogoeshere' in l:
+				output+='<label id="songinfoLabel"> %s </label><br>\n'%("test")
+			elif 'songsgohere' in l:
+				try: 
+					songIndex=0
+					playlistName=cherrypy.session['playlist'].split('.')[1]
+					currList=list(c[cherrypy.session['login']][cherrypy.session['playlist']].find())
+					#i need to convert currList into a list of youtube ids
+					for song in currList:
+						youtubeID=song['url'].split('=')[-1]
+						name=song['song']
+						artist=song['artist']
+						output+='songs[%d]="%s";\n'%(songIndex,youtubeID)
+						output+='songText[%d]="%s by %s on playlist:%s";\n'%(songIndex,name,artist,playlistName)
+						songIndex+=1
+					output+='currSongIndex=%s;\n'%(cherrypy.session['songNumber'])
+					output+='max=%d;\n'%(songIndex)
+				except Exception, p:
+					print 'error',str(p)
+					pass
+			else:
+				output+=l
 		return output
 	player.exposed=True
 	
