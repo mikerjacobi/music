@@ -13,14 +13,49 @@
 		headergoeshere
                 <div id="page">
                 <div id="content">
+
+<!--	
+		<iframe src="/player" width=500 height=45 frameborder=0 scrolling="no"> </iframe><br><br> -->
+
                 <div class="box">
                 <h2>My Lists</h2>
                 <p name=content>
+
 		<div id="container" class="clearfix">
+
+
 		
 		<div class="box col1">
 		<h4>Your Lists: </h4>
 		viewlists	
+		
+		<script text='text/javascript'>
+
+		var elems=document.getElementsByClassName('listData');
+                for (var i=0;i<elems.length;i+=1){
+                     elems[i].style.display='none';}
+		
+		function viewPlaylist(list)
+		{
+			javascriptgoeshere	
+
+			id=list+"Div";
+			if (document.getElementById(id).style.display=='block')
+			{
+				document.getElementById(id).style.display='none';
+				return;
+			}
+
+			var elems=document.getElementsByClassName('listData');	
+			for (var i=0;i<elems.length;i+=1){
+				elems[i].style.display='none';}
+
+			document.getElementById(id).innerHTML=playlists[list];
+			document.getElementById(id).style.display='block';
+		}
+
+		</script>
+	
 		</div>
 		<div class="box col2">
 		<h4>Create/Add to List:</h4>
@@ -33,7 +68,6 @@
 		</form>	
 		</div>
 		<div class="box col1">
-		<iframe src="/player" width=500 height=45 frameborder=0 scrolling="no"> </iframe>
 
 		<!--
 		<a href="/player"> player </a>

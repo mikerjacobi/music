@@ -41,9 +41,10 @@ class Index(object):
                         lookup=list(c['data']['users'].find({'username':str(uname),'password':str(pword)}))
                         if len(lookup)==1:
 				cherrypy.lib.sessions.init(name=str(uname))
-                                print 'FOUND USER %s'%(str(lookup[0]['username']))
+                                #print 'FOUND USER %s'%(str(lookup[0]['username']))
                                 cherrypy.session['login']=str(uname)
                                 loggedIn=1
+				return self.mylists()
                         else:
                                 loggedIn=2
                 output=''
@@ -61,6 +62,8 @@ class Index(object):
                 return output
         index.exposed=True
 
+
+	'''
         def create(self,uname=None,pword=None):
                 userAdded=0
                 if uname!=None:
@@ -79,7 +82,7 @@ class Index(object):
                         else: output+=l
                 return output
         create.exposed=True
-
+	'''
 	def mylists(self, listname=None,url=None,song=None,artist=None,playing=None,playlist=None,songNumber=None):
 		verified=self.verifyUser()
                 if not verified: return self.index(redirect=1)
@@ -93,7 +96,7 @@ class Index(object):
 		if playing!=None:
 			cherrypy.session['playing']=str(playing)
 		if playlist!=None:
-			cherrypy.session['playlist']=str(playlist)
+			cherrypy.session['playlist']='lists.'+str(playlist)
 		if songNumber!=None:
 			cherrypy.session['songNumber']=str(songNumber)
 
@@ -101,6 +104,7 @@ class Index(object):
 		pageurl=webpageDirectory+'mylists.html'
 		output=''
 		f=open(pageurl,'r')
+		javascript=''
 		for l in f:
 			if 'headergoeshere' in l: output+=header()
                         elif 'footergoeshere' in l: output+=footer()
@@ -111,23 +115,32 @@ class Index(object):
 						
 			elif 'viewlists' in l:
 				playlists=c[user].collection_names()
-#list(c[user]['lists'].find())
 				if len(playlists)==0: output+="<b> None<br></b>"
 				else:
+					#javascript="\n<script type='text/javascript'>\n var playlists={};\n"
+					javascript='\nvar playlists={};\n'
 					for playlist in playlists:
 						if playlist=='system.indexes':continue
-						output+="<b>%s</b><br>"%(playlist.split('.')[1])
-						songs=list(c[user][playlist].find())
+						playlist=playlist.split('.')[1]
+						output+="<button onclick='viewPlaylist(\"%s\")'> <b>%s</b> </button> <div class='listData' id='%sDiv' > </div>\n"%(playlist,playlist,playlist)
+						javascript+="playlists[\"%s\"]=\""%(playlist)
+						songs=list(c[user]["lists."+playlist].find())
 						i=0
 						for song in songs:
 							name=song['song']
         	                                        artist=song['artist']
 	                                                songid=song['url'].split('=')[1]
 							url="http://jacobra.com:8080/mylists?playing=%s&playlist=%s&songNumber=%d"%(songid,playlist,i)
-                	                                output+="\t %d: <a href=%s>%s by %s</a>  <br>\n"%(i+1, url,name,artist)
+                	                                #output+="\t %d: <a href=%s>%s by %s</a>  <br>\n"%(i+1, url,name,artist)
+							javascript+="\t %d: <a href=%s>%s by %s</a>  <br>"%(i+1, url,name,artist)
 							i+=1
 						output+='<br>'
-
+						javascript+="\";\n  "
+					#javascript+="</script>\n\n<br>"
+					#output+=javascript
+			elif 'javascriptgoeshere' in l:
+				#continue
+				output+=javascript
 			else: output+=l
 		return output
 	mylists.exposed=True
@@ -153,7 +166,6 @@ class Index(object):
 					songIndex=0
 					playlistName=cherrypy.session['playlist'].split('.')[1]
 					currList=list(c[cherrypy.session['login']][cherrypy.session['playlist']].find())
-					#i need to convert currList into a list of youtube ids
 					for song in currList:
 						youtubeID=song['url'].split('=')[-1]
 						name=song['song']
@@ -164,15 +176,30 @@ class Index(object):
 					output+='currSongIndex=%s;\n'%(cherrypy.session['songNumber'])
 					output+='max=%d;\n'%(songIndex)
 				except Exception, p:
-					print 'error',str(p)
+					print 'PLAYER ERROR: ',str(p)
 					pass
 			else:
 				output+=l
 		return output
 	player.exposed=True
+
+	def testing(self):
+		output=''
+		f=open(webpageDirectory+'testing.html','r').read().split('\n')
+		for l in f:
+			if 'session' in l:
+				for k in cherrypy.session.keys():
+					output+="%s: %s<br>"%(k,cherrypy.session[k])
+			elif 'headergoeshere' in l: output+=header()
+			elif 'footergoeshere' in l: output+=footer()
+			else:
+				output+=l
+		return output
+	testing.exposed=True
+			
 	
 
-
+'''
 	def load(self, musiclist=None):
 		verified=self.verifyUser()
 		if not verified: return self.index(redirect=1) 
@@ -253,7 +280,7 @@ class Index(object):
 	convert.exposed = True
 
 
-	
+'''	
 
 		
 
