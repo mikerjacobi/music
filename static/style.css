@@ -1,0 +1,243 @@
+/*
+Design by Free CSS Templates
+http://www.freecsstemplates.org
+Released for free under a Creative Commons Attribution 3.0 License
+
+Name       : Nullified
+Description: A two-column, fixed-width design with dark color scheme.
+Version    : 1.0
+Released   : 20120326
+*/
+
+* {
+	padding: 0;
+	margin: 0;
+}
+
+a {
+	text-decoration: underline;
+	color: #FFF;
+}
+
+a:hover {
+	text-decoration: none;
+}
+
+body {
+	font-size: 10pt;
+	/*line-height: 1.5em;*/
+	line-height: 200%;
+	color: #838383;
+	background-color:#000000; top center;
+	letter-spacing: -0.02em;
+}
+
+body,input {
+	font-family: Oswald, sans-serif;
+}
+
+br.clearfix {
+	clear: both;
+}
+
+h1,h2,h3,h4 {
+	text-transform: uppercase;
+	letter-spacing: -1px;
+	font-weight: normal;
+}
+
+h2 {
+	font-size: 1.75em;
+}
+
+h2,h3,h4 {
+	color: #FFF;
+	font-family: Oswald, sans-serif;
+	margin-bottom: 1em;
+}
+
+h3 {
+	font-size: 1.5em;
+}
+
+h4 {
+	font-size: 1em;
+}
+
+img.alignleft {
+	margin: 5px 20px 20px 0;
+	float: left;
+}
+
+img.aligntop {
+	margin: 5px 0 20px 0;
+}
+
+p {
+	margin-bottom: 1.5em;
+}
+
+ul {
+	margin-bottom: 1.5em;
+}
+
+ul h4 {
+	margin-bottom: 0.35em;
+}
+
+#content {
+	width: 700px;
+	padding: 0;
+	float: left;
+}
+
+#footer {
+	text-align: center;
+	padding: 0px 0 0px 0;
+	font-size: 0.9em;
+	background: #080808;
+	height: 30px;
+}
+
+#footer a {
+	color: #555;
+}
+
+#header {
+	color: #FFF;
+	position: relative;
+	height: 80px;
+	background: #854000 url(images/bg.png) bottom center no-repeat;
+    	/*width: 600px;*/
+	padding: 35px;
+}
+
+#logo {
+	position: absolute;
+	top: 60px;
+}
+
+#logo a {
+	color: #FFF;
+	text-decoration: none;
+	text-shadow: 0 1px 1px rgba(0,0,0,0.8);
+}
+
+#logo h1 {
+	font-size: 3em;
+	font-family: Oswald, sans-serif;
+}
+
+#menu {
+	line-height: 60px;
+	font-family: Oswald, sans-serif;
+	padding: 0 35px 0 35px;
+	/*width: 900px;*/
+	height: 65px;
+	font-size: 1.2em;
+	background: #B04E00; 
+	text-shadow: 0 1px 1px rgba(0,0,0,0.8);
+}
+
+#menu {
+	text-transform: uppercase;
+	letter-spacing: -1px;
+	color: #FFF;
+}
+
+#menu a {
+	color: #FFF;
+	text-decoration: none;
+}
+
+#menu ul {
+	list-style: none;
+}
+
+#menu ul li {
+	padding: 0 20px 0 20px;
+	height: 60px;
+	display: inline-block;
+}
+
+#menu ul li.first {
+	padding-left: 0;
+}
+
+#menu ul li.active {
+	background: #743737;
+}
+
+#menu .arrow {
+	display: inline-block;
+	margin: 0 0 0 0.5em;
+	position: relative;
+	width: 0;
+	height: 0;
+	top: -3px;
+	border-left: 6px solid transparent;
+	border-right: 6px solid transparent;
+	border-top: 7px solid #492222;
+}
+
+#page {
+	color: #AAA;
+	padding: 60px 35px 25px 35px;
+	margin: 0;
+	width: 600px;
+	position: relative;
+}
+
+#page strong {
+	color: #FFF;
+}
+
+#page .section-list {
+	list-style: none;
+	padding-left: 0;
+}
+
+#page .section-list li {
+	padding: 20px 0 20px 0;
+	clear: both;
+}
+
+#page ul {
+	list-style: none;
+}
+
+#page ul li {
+	padding: 10px 0 10px 0;
+	border-top: dotted 1px #333;
+}
+
+#page ul li.first {
+	padding-top: 0;
+	border-top: 0;
+}
+
+.box {
+	margin: 0 0 10px 0;
+	/*overflow: hidden;*/
+}
+
+#mainwrapper {
+        width: 900px;
+        position: relative;
+        background: #151515 bottom center no-repeat;
+        margin: 80px auto 0 auto;
+}
+
+#embedwrapper {
+	/*width: 700px;*/
+	/*position: relative;*/
+	background: #151515;
+}
+
+@font-face {
+  font-family: 'Oswald';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Oswald Regular'), local('Oswald-Regular'), url(oswald.woff) format('woff');
+}
+

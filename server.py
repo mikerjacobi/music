@@ -12,18 +12,6 @@ c=Connection()
 
 
 
-def header():
-	output=''
-	f=open('pages/header.html','r')
-	for l in f: output+=l
-	return output
-
-def footer():
-	output=''
-        f=open('pages/footer.html','r')
-        for l in f: output+=l
-        return output
-
 class Index(object):
 	def verifyUser(self):
 		verified=0
@@ -34,121 +22,10 @@ class Index(object):
 			pass
 		return verified
 
-	def index(self,uname=None,pword=None,redirect=0):
-                loggedIn=0
-                if uname!=None:
-			cherrypy.session.clear()
-                        lookup=list(c['data']['users'].find({'username':str(uname),'password':str(pword)}))
-                        if len(lookup)==1:
-				cherrypy.lib.sessions.init(name=str(uname))
-                                #print 'FOUND USER %s'%(str(lookup[0]['username']))
-                                cherrypy.session['login']=str(uname)
-                                loggedIn=1
-				return self.mylists()
-                        else:
-                                loggedIn=2
-                output=''
-                pageurl=webpageDirectory+'login.html'
-                f=open(pageurl,'r')
-                for l in f:
-                        if 'headergoeshere' in l: output+=header()
-                        elif 'footergoeshere' in l: output+=footer()
-                        elif 'name=content' in l:
-                                output+=l
-				if redirect: output+="<font color='red'> Please log in.</font><br>"
-                                if loggedIn==1: output+='%s, you are logged in <br>'%(str(uname))
-                                elif loggedIn==2: output+='<font color="red"> login failed.</font><br>'
-                        else: output+=l
-                return output
-        index.exposed=True
-
-
-	'''
-        def create(self,uname=None,pword=None):
-                userAdded=0
-                if uname!=None:
-                        c['data']['users'].insert({'username':str(uname),'password':str(pword)})
-                        userAdded=1
-
-                output=''
-                pageurl=webpageDirectory+'login.html'
-                f=open(pageurl,'r')
-                for l in f:
-                        if 'headergoeshere' in l: output+=header()
-                        elif 'footergoeshere' in l: output+=footer()
-                        elif 'name=content' in l:
-                                output+=l
-                                if userAdded==1: output+='user: %s added.'%(str(uname))
-                        else: output+=l
-                return output
-        create.exposed=True
-	'''
-	def mylists(self, listname=None,url=None,song=None,artist=None,playing=None,playlist=None,songNumber=None):
-		verified=self.verifyUser()
-                if not verified: return self.index(redirect=1)
-
-		listAdded=0
-		user=cherrypy.session['login']
-		if listname!=None and url!=None and song!=None and artist!=None:	
-			listAdded=1
-			listname,url,song,artist=str(listname),str(url),str(song),str(artist)
-			c[user]['lists'][listname].insert({"url":url,"song":song,"artist":artist})
-		if playing!=None:
-			cherrypy.session['playing']=str(playing)
-		if playlist!=None:
-			cherrypy.session['playlist']='lists.'+str(playlist)
-		if songNumber!=None:
-			cherrypy.session['songNumber']=str(songNumber)
-
-			
-		pageurl=webpageDirectory+'mylists.html'
-		output=''
-		f=open(pageurl,'r')
-		javascript=''
-		for l in f:
-			if 'headergoeshere' in l: output+=header()
-                        elif 'footergoeshere' in l: output+=footer()
-                        elif 'name=content' in l:
-				output+=l
-				#output+="hello %s<br>"%(user)
-				#if listAdded: output+="added %s to %s<br>"%(song,listname)
-						
-			elif 'viewlists' in l:
-				playlists=c[user].collection_names()
-				if len(playlists)==0: output+="<b> None<br></b>"
-				else:
-					#javascript="\n<script type='text/javascript'>\n var playlists={};\n"
-					javascript='\nvar playlists={};\n'
-					for playlist in playlists:
-						if playlist=='system.indexes':continue
-						playlist=playlist.split('.')[1]
-						output+="<button onclick='viewPlaylist(\"%s\")'> <b>%s</b> </button> <div class='listData' id='%sDiv' > </div>\n"%(playlist,playlist,playlist)
-						javascript+="playlists[\"%s\"]=\""%(playlist)
-						songs=list(c[user]["lists."+playlist].find())
-						i=0
-						for song in songs:
-							name=song['song']
-        	                                        artist=song['artist']
-	                                                songid=song['url'].split('=')[1]
-							url="http://jacobra.com:8080/mylists?playing=%s&playlist=%s&songNumber=%d"%(songid,playlist,i)
-                	                                #output+="\t %d: <a href=%s>%s by %s</a>  <br>\n"%(i+1, url,name,artist)
-							javascript+="\t %d: <a href=%s>%s by %s</a>  <br>"%(i+1, url,name,artist)
-							i+=1
-						output+='<br>'
-						javascript+="\";\n  "
-					#javascript+="</script>\n\n<br>"
-					#output+=javascript
-			elif 'javascriptgoeshere' in l:
-				#continue
-				output+=javascript
-			else: output+=l
-		return output
-	mylists.exposed=True
-
 	def player(self):
-		verified=self.verifyUser()
-                if not verified: return self.index(redirect=1)
-		try: cherrypy.session['playlist']
+		try: 
+			cherrypy.session['playlist']
+			cherrypy.session['playlistOwner']
 		except: return ''
 
 
@@ -157,7 +34,6 @@ class Index(object):
 		f=open(webpageDirectory+'player.html','r')
 		for l in f:
 			if 'initialVideo:' in l:
-				#output+='initialVideo: "%s",\n'%(cherrypy.session['playing'])
 				output+='initialVideo: songs[%s],\n'%(cherrypy.session['songNumber'])
 			elif 'infogoeshere' in l:
 				output+='<label id="songinfoLabel"> %s </label><br>\n'%("test")
@@ -165,7 +41,7 @@ class Index(object):
 				try: 
 					songIndex=0
 					playlistName=cherrypy.session['playlist'].split('.')[1]
-					currList=list(c[cherrypy.session['login']][cherrypy.session['playlist']].find())
+					currList=list(c[cherrypy.session['playlistOwner']][cherrypy.session['playlist']].find())
 					for song in currList:
 						youtubeID=song['url'].split('=')[-1]
 						name=song['song']
@@ -183,151 +59,143 @@ class Index(object):
 		return output
 	player.exposed=True
 
-	def testing(self):
+	def index(self,t=0,playlistOwner=None,playlist=None,songNumber=0):
+		cherrypy.session['songNumber']=str(songNumber)
+                if playlist!=None and playlistOwner!=None:
+                        cherrypy.session['playlist']='lists.'+str(playlist)
+			cherrypy.session['playlistOwner']=str(playlistOwner)
+
 		output=''
-		f=open(webpageDirectory+'testing.html','r').read().split('\n')
-		for l in f:
-			if 'session' in l:
-				for k in cherrypy.session.keys():
-					output+="%s: %s<br>"%(k,cherrypy.session[k])
-			elif 'headergoeshere' in l: output+=header()
-			elif 'footergoeshere' in l: output+=footer()
+                f=open(webpageDirectory+'main.html','r').read().split('\n')
+                for l in f:
+			if 'loadpagegoeshere' in l:
+				output+="<script type='text/javascript'> loadPage('%s'); </script>"%(str(t))
 			else:
-				output+=l
-		return output
-	testing.exposed=True
-			
-	
+                        	output+=l
+                return output
+        index.exposed=True
 
-'''
-	def load(self, musiclist=None):
-		verified=self.verifyUser()
-		if not verified: return self.index(redirect=1) 
-
-                if musiclist!=None:
-                        musiclist=str(musiclist)
-                        print musiclist
+	def testing(self):
                 output=''
-                f=open(webpageDirectory+'load.html','r')
+                f=open(webpageDirectory+'testing.html','r').read().split('\n')
                 for l in f:
-                        if 'headergoeshere' in l: output+=header()
-                        elif 'footergoeshere' in l: output+=footer()
-                        elif 'name=content' in l:
-                                output+=l
-                                try: output+='Hello %s'%cherrypy.session['login']
-                                except: pass
-
-                        elif 'loadlist' in l:
-                                if musiclist==None: continue
-                                playlist=list(c['lists'][musiclist].find())
-                                for i in range(len(playlist)):
-                                        name=playlist[i]['song']
-                                        artist=playlist[i]['artist']
-                                        url=playlist[i]['url']
-
-                                        output+="%d: <a href=%s>%s by %s</a>  <br>\n"%(i+1, url,name,artist)
-                                        #for metadata in song:
-                                                #print metadata
-                                                #output+=str(metadata)
-                        else: output+=l
+			output+=l
                 return output
-        load.exposed=True
+        testing.exposed=True	
 
-	def lists(self,listname=None,url=None,song=None,artist=None):
+	def mylists(self):
 		verified=self.verifyUser()
-                if not verified: return self.index(redirect=1) 
-
-		added=0
-		if listname!=None and url!=None and song!=None and artist!=None:
-			listname,url,song,artist=str(listname),str(url),str(song),str(artist)
+                if not verified: return "please login"
 		
-			#logic to add to mongo
-			url=url.split('=')[0].split('?')[0]
-			url="http://www.youtube.com/embed/%s"%(url)
-			#verify that it's a real url
+                output=''
+                f=open(webpageDirectory+'mylists.html','r').read().split('\n')
+                for l in f:
+			if 'viewlists' in l:
+                                playlists=c[cherrypy.session['login']].collection_names()
+                                if len(playlists)==0: output+="<b> None<br></b>"
+                                else:
+                                        #javascript="\n<script type='text/javascript'>\n var playlists={};\n"
+                                        javascript='\nvar playlists={};\n'
+                                        for playlist in playlists:
+                                                if playlist=='system.indexes':continue
+                                                playlist=playlist.split('.')[1]
+                                                output+="<button onclick='viewPlaylist(\"%s\")'> <b>%s</b> </button> <div class='listData' id='%sDiv' > </div>\n"%(playlist,playlist,playlist)
+                                                javascript+="playlists[\"%s\"]=\""%(playlist)
+                                                songs=list(c[cherrypy.session['login']]["lists."+playlist].find())
+                                                i=0
+                                                for song in songs:
+                                                        name=song['song']
+                                                        artist=song['artist']
+                                                        songid=song['url'].split('=')[1]
+                                                        url="http://jacobra.com:8080?playlistOwner=%s&playlist=%s&songNumber=%d"%(cherrypy.session['login'],playlist,i)
+                                                        #output+="\t %d: <a href=%s>%s by %s</a>  <br>\n"%(i+1, url,name,artist)
+                                                        javascript+="\t %d: <a href=%s>%s by %s</a>  <br>"%(i+1, url,name,artist)
+                                                        i+=1
+                                                output+='<br>'
+                                                javascript+="\";\n  "
+                                        #javascript+="</script>\n\n<br>"
+                                        #output+=javascript
+                        elif 'javascriptgoeshere' in l:
+                                #continue
+                                output+=javascript
+			else:
+                        	output+=l
+                return output
+        mylists.exposed=True
 
-			
-			c['lists'][listname].insert({'url':url,'song':song,'artist':artist})
-			added=1
+	def listForm(self,listname=None,url=None,song=None,artist=None):
+		pass
+	listForm.expose=True
 
-		output=''
-		f=open(webpageDirectory+'lists.html','r')
-		for l in f:
-			if 'headergoeshere' in l: output+=header()
-			elif 'footergoeshere' in l: output+=footer()
-			elif "name=content" in l and added:
-				output+=l
-				output+='added '+song+' to '+listname+'!<br>'	
-			else: output+=l
-		return output
-	lists.exposed=True
+
+	def login(self):
+                output=''
+                f=open(webpageDirectory+'login.html','r').read().split('\n')
+                for l in f:
+			if 'messagetouser' in l:
+				try:
+					if cherrypy.session['login']!='': output+='You\'re logged in, %s!'%(cherrypy.session['login'])
+				except: pass
+			else:
+                        	output+=l
+                return output
+        login.exposed=True
 	
-	def convert(self, url=None):
-		verified=self.verifyUser()
-                if not verified: return self.index(redirect=1)
+	#this is the logic called when users click login	
+	def loginForm(self,uname=None,pword=None):
+		try: del cherrypy.session['login']
+		except: pass
+		if uname!=None:
+                        cherrypy.session.clear()
+                        lookup=list(c['data']['users'].find({'username':str(uname),'password':str(pword)}))
+                        if len(lookup)==1:
+                                cherrypy.lib.sessions.init(name=str(uname))
+                                cherrypy.session['login']=str(uname)
+				return self.index(t=1)
+			else:
+				return self.index()
+	loginForm.exposed=True
 
-		output=''
-                f=open(webpageDirectory+'convert.html','r')
-                for l in f:
-			if "linkgoeshere" in l and url!=None:
-				hashTag=url.strip('\n').strip('"').split('=')[1]
-				link="<iframe width=300 height=301 src=http://www.youtube.com/embed/"+hashTag+"?rel=0&autoplay=1&modestbranding=1&autohide=0&#8243; frameborder=0></iframe><br>"
-				output+=link
-			elif 'headergoeshere' in l: output+=header()
-                        elif 'footergoeshere' in l: output+=footer()
-			else: output+=l
-                return output
-	convert.exposed = True
-
-
-'''	
+	#this is the logic called when users create a new account from the login screen
+	def createForm(self,uname=None,pword=None):
+		try: del cherrypy.session['login']
+		except: pass
+		if uname==None or pword==None: return self.index()
+		uname,pword=str(uname),str(pword)
+		lookup=list(c['data']['users'].find({'username':str(uname)}))
+		if len(lookup)!=0: return self.index()
+		c['data']['users'].insert({'username':uname,'password':pword})	
+		cherrypy.session['login']=uname
+		return self.index()
+	createForm.exposed=True
 
 		
 
-
-'''
-class Template(object):
-	def index(self):
-		output=''
-		pageurl=webpageDirectory+''
-        	f=open(pageurl,'r')
-		for l in f:
-                        if 'headergoeshere' in l: output+=header()
-                        elif 'footergoeshere' in l: output+=footer()
-                        else: output+=l
-                return output
-        index.exposed=True
-
-class Posttest(object):
-	def index(self,login=None):
-		if login!=None:
-			print 'test',str(login)
-		output=''
-		pageurl=webpageDirectory+'posttest.html'
-        	f=open(pageurl,'r')
-		for l in f:
-                        if 'headergoeshere' in l: output+=header()
-                        elif 'footergoeshere' in l: output+=footer()
-                        else: output+=l
-                return output
-        index.exposed=True
-'''
-
+		
+	#####################3 end temp!!!!
+		
+			
 	
 
 root=Index()
-#root.login=Login()
-#root.posttest=Posttest()
-#root.convert=Convert()
-#root.lists=Lists()
-#root.load=Load()
-#root.session=Session()
+cherrypy.tree.mount(root, '/static', config={'/': {
+                'tools.staticdir.on': True,
+                'tools.staticdir.dir': '/var/www/music/static'}})
 
 cherrypy.config.update({'server.socket_host':'0.0.0.0',
 			'server.socket_port':8080,
 			'tools.sessions.on':True,
-			#'tools.sessions.storage_type':"file",
-			#'tools.sessions.storage_path':"/var/www/music/datadir/cherry_session",
-			#'tools.sessions.timeout':60
 			})
+
 cherrypy.quickstart(root)
+
+
+
+
+
+
+
+
+
+
+

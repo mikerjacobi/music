@@ -1,0 +1,61 @@
+<html>
+	<head>
+		<title> jacobra </title>
+		<link rel="stylesheet" type="text/css" href="/static/style.css" />
+		<script type="text/javascript" src="/static/jquery-1.7.1.min.js"></script>
+		<script type="text/javascript" src="/static/jquery.masonry.min.js"></script>
+	</head>
+
+	<body>
+		<script type="text/javascript">
+			var sites={};
+			var height='300';
+			sites['0']='/login';
+			sites['1']='/mylists';
+			sites['2']='/testing';
+
+	
+			function loadPage(pageIndex)
+			{
+				var elems=document.getElementsByClassName("listfont");
+				for (var i=0;i<elems.length;i+=1)
+				{	
+					elems[i].color="white";
+				}
+				document.getElementById("lf"+pageIndex).color="blue";
+				$('#contentDiv').load(sites[pageIndex]);
+			}
+		</script>
+
+		<div id="mainwrapper">
+
+			<div id="menu">
+			        <ul>
+				<li onclick='loadPage("0");'><font color="blue" class='listfont' id='lf0'>  Home </font></li>
+				<li onclick='loadPage("1");'><font color="white" class='listfont' id='lf1'>  Lists </font></li>
+				<li onclick='loadPage("2");'><font color="white" class='listfont'id='lf2'>  Testing </font><li>
+        			<li> <iframe src="/player" width=300 height=45 frameborder=0 scrolling="no"> </iframe><li>
+		 	       </ul>
+			</div>
+
+
+                <div id="page">
+                <div id="content">
+                <div class="box">
+                <p name=content>
+			<div id="contentDiv">
+			</div>							
+                </p>
+                </div>
+                </div>
+                <br class="clearfix" />
+            	</div>
+
+			<div id="footer">
+            		<a href="http://jacobra.com">Jacobra</a>
+			</div>
+
+        	</div>
+		loadpagegoeshere
+	</body>
+</html>
