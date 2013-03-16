@@ -107,7 +107,7 @@ class Index(object):
                                                         name=song['song']
                                                         artist=song['artist']
                                                         songid=song['url'].split('=')[1]
-                                                        url="http://jacobra.com:8080?playlistOwner=%s&playlist=%s&songNumber=%d"%(cherrypy.session['login'],playlist,i)
+                                                        url="http://jacobra.com:8080?t=1&playlistOwner=%s&playlist=%s&songNumber=%d"%(cherrypy.session['login'],playlist,i)
                                                         #output+="\t %d: <a href=%s>%s by %s</a>  <br>\n"%(i+1, url,name,artist)
                                                         javascript+="\t %d: <a href=%s>%s by %s</a>  <br>"%(i+1, url,name,artist)
                                                         i+=1
@@ -124,8 +124,12 @@ class Index(object):
         mylists.exposed=True
 
 	def listForm(self,listname=None,url=None,song=None,artist=None):
-		pass
-	listForm.expose=True
+		if listname!=None and url!=None and song!=None and artist!=None:
+                        listname,url,song,artist=str(listname),str(url),str(song),str(artist)
+                        c[cherrypy.session['login']]['lists'][listname].insert({"url":url,"song":song,"artist":artist})
+		
+		return self.index(t=1)
+	listForm.exposed=True
 
 
 	def login(self):

@@ -1,26 +1,26 @@
-Sat Mar 16 04:52:31 
-Sat Mar 16 04:52:31 warning: 32-bit servers don't have journaling enabled by default. Please use --journal if you want durability.
-Sat Mar 16 04:52:31 
-Sat Mar 16 04:52:31 [initandlisten] MongoDB starting : pid=18208 port=27017 dbpath=datadir 32-bit host=ubuntu
-Sat Mar 16 04:52:31 [initandlisten] 
-Sat Mar 16 04:52:31 [initandlisten] ** NOTE: when using MongoDB 32 bit, you are limited to about 2 gigabytes of data
-Sat Mar 16 04:52:31 [initandlisten] **       see http://blog.mongodb.org/post/137788967/32-bit-limitations
-Sat Mar 16 04:52:31 [initandlisten] **       with --journal, the limit is lower
-Sat Mar 16 04:52:31 [initandlisten] 
-Sat Mar 16 04:52:31 [initandlisten] db version v2.0.4, pdfile version 4.5
-Sat Mar 16 04:52:31 [initandlisten] git version: nogitversion
-Sat Mar 16 04:52:31 [initandlisten] build info: Linux roseapple 2.6.24-28-server #1 SMP Wed Aug 18 21:17:51 UTC 2010 i686 BOOST_LIB_VERSION=1_46_1
-Sat Mar 16 04:52:31 [initandlisten] options: { dbpath: "datadir" }
+Sat Mar 16 05:09:51 
+Sat Mar 16 05:09:51 warning: 32-bit servers don't have journaling enabled by default. Please use --journal if you want durability.
+Sat Mar 16 05:09:51 
+Sat Mar 16 05:09:51 [initandlisten] MongoDB starting : pid=18455 port=27017 dbpath=datadir 32-bit host=ubuntu
+Sat Mar 16 05:09:51 [initandlisten] 
+Sat Mar 16 05:09:51 [initandlisten] ** NOTE: when using MongoDB 32 bit, you are limited to about 2 gigabytes of data
+Sat Mar 16 05:09:51 [initandlisten] **       see http://blog.mongodb.org/post/137788967/32-bit-limitations
+Sat Mar 16 05:09:51 [initandlisten] **       with --journal, the limit is lower
+Sat Mar 16 05:09:51 [initandlisten] 
+Sat Mar 16 05:09:51 [initandlisten] db version v2.0.4, pdfile version 4.5
+Sat Mar 16 05:09:51 [initandlisten] git version: nogitversion
+Sat Mar 16 05:09:51 [initandlisten] build info: Linux roseapple 2.6.24-28-server #1 SMP Wed Aug 18 21:17:51 UTC 2010 i686 BOOST_LIB_VERSION=1_46_1
+Sat Mar 16 05:09:51 [initandlisten] options: { dbpath: "datadir" }
 ************** 
 Unclean shutdown detected.
 Please visit http://dochub.mongodb.org/core/repair for recovery instructions.
 *************
-Sat Mar 16 04:52:31 [initandlisten] exception in initAndListen: 12596 old lock file, terminating
-Sat Mar 16 04:52:31 dbexit: 
-Sat Mar 16 04:52:31 [initandlisten] shutdown: going to close listening sockets...
-Sat Mar 16 04:52:31 [initandlisten] shutdown: going to flush diaglog...
-Sat Mar 16 04:52:31 [initandlisten] shutdown: going to close sockets...
-Sat Mar 16 04:52:31 [initandlisten] shutdown: waiting for fs preallocator...
-Sat Mar 16 04:52:31 [initandlisten] shutdown: closing all files...
-Sat Mar 16 04:52:31 [initandlisten] closeAllFiles() finished
-Sat Mar 16 04:52:31 dbexit: really exiting now
+Sat Mar 16 05:09:51 [initandlisten] exception in initAndListen: 12596 old lock file, terminating
+Sat Mar 16 05:09:51 dbexit: 
+Sat Mar 16 05:09:51 [initandlisten] shutdown: going to close listening sockets...
+Sat Mar 16 05:09:51 [initandlisten] shutdown: going to flush diaglog...
+Sat Mar 16 05:09:51 [initandlisten] shutdown: going to close sockets...
+Sat Mar 16 05:09:51 [initandlisten] shutdown: waiting for fs preallocator...
+Sat Mar 16 05:09:51 [initandlisten] shutdown: closing all files...
+Sat Mar 16 05:09:51 [initandlisten] closeAllFiles() finished
+Sat Mar 16 05:09:51 dbexit: really exiting now
