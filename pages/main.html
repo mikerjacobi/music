@@ -10,9 +10,10 @@
 		<script type="text/javascript">
 			var sites={};
 			var height='300';
-			sites['0']='/login';
-			sites['1']='/mylists';
-			sites['2']='/testing';
+			sites['0']='/discover';
+			sites['1']='/playing';
+			sites['2']='/mylists';
+			sites['3']='/login';
 
 	
 			function loadPage(pageIndex)
@@ -31,10 +32,11 @@
 
 			<div id="menu">
 			        <ul>
-				<li onclick='loadPage("0");'><font color="blue" class='listfont' id='lf0'>  Home </font></li>
-				<li onclick='loadPage("1");'><font color="white" class='listfont' id='lf1'>  Lists </font></li>
-				<li onclick='loadPage("2");'><font color="white" class='listfont'id='lf2'>  Testing </font><li>
-        			<li> <iframe src="/player" width=300 height=45 frameborder=0 scrolling="no"> </iframe><li>
+				<li onclick='loadPage("0");'><font color="blue" class='listfont' id='lf0'>  Discover </font></li>
+				<li onclick='loadPage("1");'><font color="white" class='listfont' id='lf1'>  Listen </font></li>
+				<li onclick='loadPage("2");'><font color="white" class='listfont' id='lf2'>  Create </font></li>
+				<li onclick='loadPage("3");'><font color="white" class='listfont' id='lf3'>  Login </font></li>
+        			<li> <iframe src="/player" width=400 height=45 frameborder=0 scrolling="no"> </iframe><li>
 		 	       </ul>
 			</div>
 
@@ -53,6 +55,7 @@
 
 			<div id="footer">
             		<a href="http://jacobra.com">Jacobra</a>
+			<a href="/logout">Logout</a>
 			</div>
 
         	</div>

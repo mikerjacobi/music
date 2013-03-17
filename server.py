@@ -59,7 +59,15 @@ class Index(object):
 		return output
 	player.exposed=True
 
-	def index(self,t=0,playlistOwner=None,playlist=None,songNumber=0):
+	def discover(self):
+		output=''
+		f=open(webpageDirectory+'discover.html').read().split('\n')
+		for l in f:
+			output+=l
+		return output
+	discover.exposed=True
+
+	def index(self,t=1,playlistOwner=None,playlist=None,songNumber=0):
 		cherrypy.session['songNumber']=str(songNumber)
                 if playlist!=None and playlistOwner!=None:
                         cherrypy.session['playlist']='lists.'+str(playlist)
@@ -82,10 +90,35 @@ class Index(object):
 			output+=l
                 return output
         testing.exposed=True	
+	
+	def playing(self):
+		output=''
+		f=open(webpageDirectory+'currPlaylist.html','r').read().split('\n')
+		for l in f:
+			if 'playinggoeshere' in l:
+				try: 
+					cherrypy.session['playlist']
+					cherrypy.session['playlistOwner']
+				except: 
+					output+="No playlist selected!\n"
+					continue
+				output+="<h4>playlist: %s, by user: %s</h4>\n"%(cherrypy.session['playlist'].split('.')[1], cherrypy.session['playlistOwner'])
+				songs=list(c[cherrypy.session['playlistOwner']][cherrypy.session['playlist']].find())
+				i=1
+				for song in songs:
+					name=song['song']
+                                        artist=song['artist']
+					output+="\t %d: %s by %s<br>\n"%(i,name,artist)
+					i+=1
+				
+			else:
+				output+=l
+		return output
+	playing.exposed=True
 
 	def mylists(self):
 		verified=self.verifyUser()
-                if not verified: return "please login"
+                if not verified: return "<h2>CREATE</h2><a href='/index?t=3'> Please Login </a>"
 		
                 output=''
                 f=open(webpageDirectory+'mylists.html','r').read().split('\n')
@@ -117,7 +150,8 @@ class Index(object):
                                         #output+=javascript
                         elif 'javascriptgoeshere' in l:
                                 #continue
-                                output+=javascript
+                                try: output+=javascript
+				except: pass
 			else:
                         	output+=l
                 return output
@@ -144,6 +178,12 @@ class Index(object):
                         	output+=l
                 return output
         login.exposed=True
+
+	def logout(self):
+		for k in cherrypy.session.keys():
+			del cherrypy.session[k]
+		return self.index(t=3)
+	logout.exposed=True
 	
 	#this is the logic called when users click login	
 	def loginForm(self,uname=None,pword=None):
@@ -155,7 +195,7 @@ class Index(object):
                         if len(lookup)==1:
                                 cherrypy.lib.sessions.init(name=str(uname))
                                 cherrypy.session['login']=str(uname)
-				return self.index(t=1)
+				return self.index(t=2)
 			else:
 				return self.index()
 	loginForm.exposed=True
