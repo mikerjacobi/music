@@ -1,14 +1,3 @@
-/*
-Design by Free CSS Templates
-http://www.freecsstemplates.org
-Released for free under a Creative Commons Attribution 3.0 License
-
-Name       : Nullified
-Description: A two-column, fixed-width design with dark color scheme.
-Version    : 1.0
-Released   : 20120326
-*/
-
 * {
 	padding: 0;
 	margin: 0;
@@ -74,11 +63,11 @@ img.aligntop {
 }
 
 p {
-	margin-bottom: 1.5em;
+	margin-bottom: 0em;
 }
 
 ul {
-	margin-bottom: 1.5em;
+	margin-bottom: 0em;
 }
 
 ul h4 {
@@ -96,7 +85,7 @@ ul h4 {
 	padding: 0px 0 0px 0;
 	font-size: 0.9em;
 	background: #080808;
-	height: 30px;
+	height: 60px;
 }
 
 #footer a {
@@ -133,10 +122,11 @@ ul h4 {
 	font-family: Oswald, sans-serif;
 	padding: 0 35px 0 35px;
 	/*width: 900px;*/
-	height: 65px;
+	height: 85px;
 	font-size: 1.2em;
 	background: #B04E00; 
 	text-shadow: 0 1px 1px rgba(0,0,0,0.8);
+	
 }
 
 #menu {
@@ -156,7 +146,7 @@ ul h4 {
 
 #menu ul li {
 	padding: 0 20px 0 20px;
-	height: 60px;
+	height: 80px;/* distance from base of header bar*/
 	display: inline-block;
 }
 
@@ -221,6 +211,17 @@ ul h4 {
 	/*overflow: hidden;*/
 }
 
+#player{
+	padding-top: 15px;
+	font-size: 10pt;
+	background: #B04E00;
+	line-height: 1.2em;
+	color: white;
+	height:200px;
+	text-align: right;
+
+}
+
 #mainwrapper {
         width: 900px;
         position: relative;
@@ -230,7 +231,7 @@ ul h4 {
 
 #embedwrapper {
 	/*width: 700px;*/
-	/*position: relative;*/
+	position: relative;
 	background: #151515;
 }
 

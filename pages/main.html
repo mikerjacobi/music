@@ -23,7 +23,11 @@
 				{	
 					elems[i].color="white";
 				}
-				document.getElementById("lf"+pageIndex).color="blue";
+
+				try
+					{document.getElementById("lf"+pageIndex).color="blue";}
+				catch (err){}
+				
 				$('#contentDiv').load(sites[pageIndex]);
 			}
 		</script>
@@ -35,8 +39,8 @@
 				<li onclick='loadPage("0");'><font color="blue" class='listfont' id='lf0'>  Discover </font></li>
 				<li onclick='loadPage("1");'><font color="white" class='listfont' id='lf1'>  Listen </font></li>
 				<li onclick='loadPage("2");'><font color="white" class='listfont' id='lf2'>  Create </font></li>
-				<li onclick='loadPage("3");'><font color="white" class='listfont' id='lf3'>  Login </font></li>
-        			<li> <iframe src="/player" width=400 height=45 frameborder=0 scrolling="no"> </iframe><li>
+				<!--<li onclick='loadPage("3");'><font color="white" class='listfont' id='lf3'>  Login </font></li>-->
+        			<li> <iframe src="/player" width=400 height=77 frameborder=0 scrolling="no"> </iframe><li>
 		 	       </ul>
 			</div>
 
@@ -54,8 +58,9 @@
             	</div>
 
 			<div id="footer">
+			<a href="#" onclick="loadPage('3');">Login</a>
+			<a href="/logout">Logout</a><br>
             		<a href="http://jacobra.com">Jacobra</a>
-			<a href="/logout">Logout</a>
 			</div>
 
         	</div>

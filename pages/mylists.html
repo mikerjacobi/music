@@ -14,6 +14,7 @@
                 <!--<div class="box">-->
                 <h2>CREATE</h2>
 		<div id="container">	
+		<div id='viewLists'>
 		<div class="box col1">
 		<h4>Your Lists: </h4>
 		viewlists	
@@ -40,6 +41,7 @@
 
 			document.getElementById(id).innerHTML=playlists[list];
 			document.getElementById(id).style.display="block";
+			document.getElementById('embedwrapper').height='500px';
 		}
 
   		$(function(){
@@ -52,7 +54,7 @@
 	 	});
 		</script>
 	
-		</div>
+		</div></div>
 		<div class="box col2">
 		<h4>Create/Add to List:</h4>
 		<form action="/listForm" method="POST">
