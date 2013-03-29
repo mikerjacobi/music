@@ -74,6 +74,7 @@ ul h4 {
 	margin-bottom: 0.35em;
 }
 
+
 #content {
 	width: 700px;
 	padding: 0;
@@ -209,6 +210,10 @@ ul h4 {
 .box {
 	margin: 0 0 10px 0;
 	/*overflow: hidden;*/
+}
+
+.aligned {
+	text-align: right;
 }
 
 #player{

@@ -18,6 +18,24 @@
 		<div class="box col1">
 		<h4>Your Lists: </h4>
 		viewlists	
+
+		<script text="text/javascript">
+			
+		function submitCreateForm()
+		{
+			var dataString='listname='+listname+'&g1='+g1+'&g2'+g2+'&v1='+v1+'&v2='+v2+'&v3='+v3;
+			$.ajax({  
+				type: "POST",  
+  				url: "/createList",  
+  				data: dataString,  
+  				success: function() {  
+    					$('#contact_form').html("<div id='message'></div>");  
+    					$('#message').html("<h2>List Created!</h2>")  
+  				}  
+			});  
+			return false;  
+		}
+		</script>
 		
 		<script text="text/javascript">
 		var elems=document.getElementsByClassName("listData");
@@ -43,12 +61,13 @@
 			document.getElementById(id).style.display="block";
 			document.getElementById('embedwrapper').height='500px';
 		}
+		
 
   		$(function(){
     	
     			$("#container").masonry({
     	  			itemSelector: ".box",
-    	  			columnWidth: 300
+    	  			columnWidth: 200
 			});
 	    
 	 	});
@@ -56,15 +75,82 @@
 	
 		</div></div>
 		<div class="box col2">
-		<h4>Create/Add to List:</h4>
-		<form action="/listForm" method="POST">
-			list name: <input type="text" name="listname" autocomplete="off"><br>
-			url to add: <input type="text" name="url" autocomplete="off"><br>
-                        song name:<input type="text" name="song" autocomplete="off"><br>
-                        artist: <input type="text" name="artist" autocomplete="off"><br>
-                        <input type="submit" value="add!">
+		<h4>Add to List:</h4>
+		<form name="addSongForm" action="" class="aligned">
+			list name: <input type="text" id="listname" autocomplete="off"><br>
+			url to add: <input type="text" id="url" autocomplete="off"><br>
+                        song name:<input type="text" id="song" autocomplete="off"><br>
+                        artist: <input type="text" id="artist" autocomplete="off"><br>
+                        <center><input class="addSongButton" type="submit" value="add!"></center>
 		</form>	
 		</div>
+
+		<script text="text/javascript">
+                $(function(){
+                $(".addSongButton").click(function()
+                {
+                        var listname = $("#listname").val();
+                        var url=$("#url").val();
+                        var song=$("#song").val();
+                        var artist=$("#artist").val();
+                        var dataString='listname='+listname+'&url='+url+'&song='+song+'&artist='+artist;
+                        $.ajax({
+                                type: "POST",
+                                url: "/addToList",
+                                data: dataString,
+                                success: function() {
+                                        $('#addSongForm').html("<div id='message'></div>");
+                                        $('#message').html("<h2>List Created!</h2>");
+                                }
+                        });
+                        loadPage("2");
+                        return false;
+                });
+                });
+                </script>
+
+		<div class="box col3">
+		<h4>Create List:</h4>
+		<!--<form action="/createList" method="POST" class="aligned">-->
+		<form name="createForm" action="" class="aligned">
+			list name: <input type="text" id="listname" autocomplete="off"><br>
+			genre1: <input type="text" id="g1" autocomplete="off"><br>
+			genre2: <input type="text" id="g2" autocomplete="off"><br>
+			vibe1: <input type="text" id="v1" autocomplete="off"><br>
+			vibe2: <input type="text" id="v2" autocomplete="off"><br>
+			vibe3: <input type="text" id="v3" autocomplete="off"><br>
+			<center><input type="submit" class="createFormButton" value="create!"></center>	
+		</form>
+		</div>
+		<script text="text/javascript">
+                $(function(){
+		$(".createFormButton").click(function()
+                {
+			var listname = $("#listname").val();
+			var g1=$("#g1").val();
+			var g2=$("#g2").val();
+			var v1=$("#v1").val();
+			var v2=$("#v2").val();
+			var v3=$("#v3").val();
+                        var dataString='listname='+listname+'&g1='+g1+'&g2'+g2+'&v1='+v1+'&v2='+v2+'&v3='+v3;
+                        $.ajax({
+                                type: "POST",
+                                url: "/createList",
+                                data: dataString,
+                                success: function() {
+                                        $('#createForm').html("<div id='message'></div>");
+                                        $('#message').html("<h2>List Created!</h2>");
+                                }
+                        });
+			loadPage("2");
+                        return false;
+                });
+		});
+                </script>
+		
+
+
+
 		</div>
 
 		</div>

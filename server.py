@@ -4,6 +4,7 @@ from pymongo import *
 import os
 import time
 import random
+import datetime
 
 #boot up mongo
 os.system('(mongod --dbpath datadir > datadir/log.txt) &')
@@ -42,13 +43,16 @@ class Index(object):
 			elif 'songsgohere' in l:
 				try: 
 					songIndex=0
-					playlistName=sesh['playlist'].split('.')[1]
-					currList=list(c[sesh['author']][sesh['playlist']].find())
-					for song in currList:
-						youtubeID=song['url'].split('=')[-1]
-						name=song['song']
-						artist=song['artist']
-						output+='songs[%d]="%s";\n'%(songIndex,youtubeID)
+					playlistName=sesh['playlist']
+					currList=list(c['music']['playlists'].find({'listname':sesh['playlist'],'author':sesh['author']}))[0]
+					currSongs=currList.get('songs')
+					for song in currSongs:
+						songData=list(c['music']['songs'].find({'url':str(song)}))[0]
+						#youtubeID=song['url'].split('=')[-1]
+						songid=str(song)
+						name=songData.get('songname')
+						artist=songData.get('artist')
+						output+='songs[%d]="%s";\n'%(songIndex,songid)
 						output+='songText[%d]="%s <br> %s <br> playlist: %s";\n'%(songIndex,name,artist,playlistName)
 						songIndex+=1
 					output+='currSongIndex=%s;\n'%(sesh['songNumber'])
@@ -83,7 +87,7 @@ class Index(object):
 						except:continue
 						try:playlists.remove('system.indexes')
 						except: pass
-						try:playlist=playlists[random.randint(0,len(playlists)-1)].split('.')[1]
+						try:playlist=playlists[random.randint(0,len(playlists)-1)]
 						except: playlist=playlists[random.randint(0,len(playlists)-1)]
 						output+='<a href="%s?t=1&author=%s&playlist=%s">%s by %s</a><br>\n'%(webRoot,author,playlist,playlist,author)
 						i+=1
@@ -98,7 +102,7 @@ class Index(object):
 	def index(self,t=1,author=None,playlist=None,songNumber=0):
 		sesh['songNumber']=str(songNumber)
                 if playlist!=None and author!=None:
-                        sesh['playlist']='lists.'+str(playlist)
+                        sesh['playlist']=str(playlist)
 			sesh['author']=str(author)
 
 		output=''
@@ -131,12 +135,15 @@ class Index(object):
 					output+="No playlist selected!\n"
 					return self.index(t=0)
 					continue
-				output+="<h4>playlist: %s, by user: %s</h4>\n"%(sesh['playlist'].split('.')[1], sesh['author'])
-				songs=list(c[sesh['author']][sesh['playlist']].find())
+				output+="<h4>playlist: %s, by user: %s</h4>\n"%(sesh['playlist'], sesh['author'])
+				#songs=list(c[sesh['author']][sesh['playlist']].find())
+				currList=list(c['music']['playlists'].find({'listname':sesh['playlist'],'author':sesh['author']}))[0]
+                                currSongs=currList.get('songs')
 				i=1
-				for song in songs:
-					name=song['song']
-                                        artist=song['artist']
+				for song in currSongs:
+					songData=list(c['music']['songs'].find({'url':str(song)}))[0]
+					name=songData.get('songname')
+                                        artist=songData.get('artist')
 					output+="\t %d: %s by %s<br>\n"%(i,name,artist)
 					i+=1
 				
@@ -153,23 +160,27 @@ class Index(object):
                 f=open(webpageDirectory+'mylists.html','r').read().split('\n')
                 for l in f:
 			if 'viewlists' in l:
-                                playlists=c[sesh['currUser']].collection_names()
+                                #playlists=c[sesh['currUser']].collection_names()
+				playlists=list(c['music']['playlists'].find({'author':sesh['currUser']}))
                                 if len(playlists)==0: output+="<b> None<br></b>"
                                 else:
                                         #javascript="\n<script type='text/javascript'>\n var playlists={};\n"
                                         javascript='\nvar playlists={};\n'
                                         for playlist in playlists:
-                                                if playlist=='system.indexes':continue
-                                                playlist=playlist.split('.')[1]
-                                                output+="<button onclick='viewPlaylist(\"%s\")'> <b>%s</b> </button> <div class='listData' id='%sDiv' > </div>\n"%(playlist,playlist,playlist)
-                                                javascript+="playlists[\"%s\"]=\""%(playlist)
-                                                songs=list(c[sesh['currUser']]["lists."+playlist].find())
+                                                #if playlist=='system.indexes':continue
+                                                #playlist=playlist.split('.')[1]
+						playlistName=playlist['listname']
+                                                output+="<button onclick='viewPlaylist(\"%s\")'> <b>%s</b> </button> <div class='listData' id='%sDiv' > </div>\n"%(playlistName,playlistName,playlistName)
+                                                javascript+="playlists[\"%s\"]=\""%(playlistName)
+                                                #songs=list(c[sesh['currUser']]["lists."+playlist].find())
+						songs=playlist['songs']
                                                 i=0
                                                 for song in songs:
-                                                        name=song['song']
-                                                        artist=song['artist']
-                                                        songid=song['url'].split('=')[1]
-                                                        url="http://jacobra.com:8080?t=1&author=%s&playlist=%s&songNumber=%d"%(sesh['currUser'],playlist,i)
+							songData=c['music']['songs'].find({'url':str(song)})[0]
+                                                        name=songData.get('songname')
+                                                        artist=songData.get('artist')
+                                                        songid=str(song)
+                                                        url="http://jacobra.com:8080?t=1&author=%s&playlist=%s&songNumber=%d"%(sesh['currUser'],playlistName,i)
                                                         #output+="\t %d: <a href=%s>%s by %s</a>  <br>\n"%(i+1, url,name,artist)
                                                         javascript+="\t %d: <a height='auto' href=%s>%s by %s</a>  <br>"%(i+1, url,name,artist)
                                                         i+=1
@@ -190,9 +201,50 @@ class Index(object):
 		if listname!=None and url!=None and song!=None and artist!=None:
                         listname,url,song,artist=str(listname),str(url),str(song),str(artist)
                         c[sesh['currUser']]['lists'][listname].insert({"url":url,"song":song,"artist":artist})
+			songID=c['music']['songs'].update({'url':url},
+				{'name':song,'artist':artist,'dateFirstAdded':str(datetime.datetime.now()),'numListens':0,'numAdds':0},
+				upsert=True)
+			#playlistID=c['music']['playlists'].insert({'listname':listname,'author':sesh['currUser'],'songs':[],'upvotes':0,'downvotes':0,'totalSongListens':0,'playlistStarts':0,'dateCreated':str(datetime.datetime.now()),'g1':'','g2':'','v1':'','v2':'','v3':''})
+			
 		
 		return self.index(t=1)
 	listForm.exposed=True
+
+	def addToList(self,listname=None,song=None,artist=None,url=None):
+		if listname==None or url==None or song==None or artist==None: return self.index(t=2)
+		listname,url,song,artist=str(listname),str(url).split('=')[1],str(song),str(artist)
+		newSong={'url':url}
+		newSong['songname']=song
+		newSong['artist']=artist
+		newSong['dateFirstAdded']=str(datetime.datetime.now())
+		newSong['numListens']=0
+		newSong['numAdds']=0
+		songID=c['music']['songs'].update({'url':url},newSong,upsert=True)
+		c['music']['playlists'].update({'listname':listname,'author':sesh['currUser']},
+			{"$pushAll":{'songs':[url]}})	
+		return self.index(t=2)
+	addToList.exposed=True
+	
+
+	def createList(self,listname=None,g1=None,g2=None,v1=None,v2=None,v3=None):
+                if not self.verifyUser(): return self.index(t=3)
+		if listname==None: return self.index(t=2) 
+		newList={'listname':str(listname)}
+		newList['author']=sesh['currUser']
+		newList['songs']=[]
+		newList['upvotes']=0
+		newList['downvotes']=0
+		newList['totalSongListens']=0
+		newList['playlistStarts']=0
+		newList['dateCreated']=str(datetime.datetime.now())
+		if g1!=None: newList['g1']=str(g1)
+		if g2!=None: newList['g2']=str(g2)
+		if v1!=None: newList['v1']=str(v1)
+		if v2!=None: newList['v2']=str(v2)
+		if v3!=None: newList['v3']=str(v3)
+		playlistID=c['music']['playlists'].insert(newList)
+		return self.index(t=2)
+	createList.exposed=True
 
 
 	def login(self):
@@ -220,7 +272,8 @@ class Index(object):
 		except: pass
 		if uname!=None:
                         sesh.clear()
-                        lookup=list(c['data']['users'].find({'username':str(uname),'password':str(pword)}))
+                        #lookup=list(c['data']['users'].find({'username':str(uname),'password':str(pword)}))
+                        lookup=list(c['music']['users'].find({'username':str(uname),'password':str(pword)}))
                         if len(lookup)==1:
                                 cherrypy.lib.sessions.init(name=str(uname))
                                 sesh['currUser']=str(uname)
@@ -235,9 +288,10 @@ class Index(object):
 		except: pass
 		if uname==None or pword==None: return self.index()
 		uname,pword=str(uname),str(pword)
-		lookup=list(c['data']['users'].find({'username':str(uname)}))
+		lookup=list(c['music']['users'].find({'username':str(uname)}))
 		if len(lookup)!=0: return self.index()
 		c['data']['users'].insert({'username':uname,'password':pword})	
+		c['music']['users'].insert({'username':uname,'password':pword,'dateAdded':str(datetime.datetime.now()),'playlists':[],'score':0})
 		sesh['currUser']=uname
 		return self.index()
 	createForm.exposed=True
