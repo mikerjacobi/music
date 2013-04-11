@@ -66,34 +66,45 @@ class Index(object):
 	player.exposed=True
 
 	def discover(self, query=None):
+
+		#process the query
+		useQuery=0
+		if query!=None:
+			sesh['query']=str(query)
+			if sesh['query']!='': useQuery=1
+		else:
+			try: 
+				sesh['query']
+				if sesh['query']=='':userQuery=0
+				else:useQuery=1
+			except: pass
+
+		if useQuery: print '!!!!!!!!!!!!!',sesh['query']
+
 		output=''
 		f=open(webpageDirectory+'discover.html').read().split('\n')
 		for l in f:
 			if 'discovergoeshere' in l:
-				continue
-				dbs=list(c.database_names())
-				for i in range(len(dbs)):dbs[i]=str(dbs[i])
-				dbs.remove('data')
-				dbs.remove('lists')
-				if query==None:	
-					i,numPlaylists=0,10
-					while i<numPlaylists:
-						try:
-							author=str(dbs[random.randint(0,len(dbs)-1)])
-							playlists=list(c[author].collection_names())
-						except: continue
-						try:
-							for j in range(len(playlists)):playlists[j]=str(playlists[j])
-						except:continue
-						try:playlists.remove('system.indexes')
-						except: pass
-						try:playlist=playlists[random.randint(0,len(playlists)-1)]
-						except: playlist=playlists[random.randint(0,len(playlists)-1)]
-						output+='<a href="%s?t=1&author=%s&playlist=%s">%s by %s</a><br>\n'%(webRoot,author,playlist,playlist,author)
+				if useQuery==0:	
+					i,numPlaylists=0,5
+					playlists=list(c['music']['playlists'].find())
+					displayLists={}
+					while len(displayLists)<numPlaylists:
+						playlist=playlists[random.randint(0,numPlaylists-1)]		
+						listID=playlist.get('_id')
+						try: displayLists[listID] #check to see if we have this playlist
+						except:
+							listname=playlist.get('listname')
+							author=playlist.get('author')
+							html='%d: <a href="%s?t=1&author=%s&playlist=%s">%s by %s</a><br>\n'%(i+1,webRoot,author,listname,listname,author)	
+							displayLists[listID]=1
+							output+=html
+			
+						
 						i+=1
 					pass
 				else:
-					query=str(query)
+					output+=sesh['query']
 			else:
 				output+=l
 		return output
@@ -114,6 +125,15 @@ class Index(object):
                         	output+=l
                 return output
         index.exposed=True
+
+	def incrementSong(self,song=None):
+		if song!=None:
+			c['music']['songs'].update({'url':str(song)},{'$inc':{'numListens':1}})
+			currPlaylist={}
+			currPlaylist['author']=sesh['author']
+			currPlaylist['listname']=sesh['playlist']
+			c['music']['playlists'].update(currPlaylist,{'$inc':{'totalSongListens':1}})
+	incrementSong.exposed=True
 
 	def testing(self):
                 output=''
@@ -154,7 +174,8 @@ class Index(object):
 
 	def mylists(self):
 		verified=self.verifyUser()
-                if not verified: return "<h2>CREATE</h2><a href='/index?t=3'> Please Login </a>"
+                if not verified: return "<h2>CREATE</h2><a href='#' onclick=\"loadPage('3');\">Login</a>"
+
 		
                 output=''
                 f=open(webpageDirectory+'mylists.html','r').read().split('\n')
@@ -284,11 +305,19 @@ class Index(object):
 
 	#this is the logic called when users create a new account from the login screen
 	def createForm(self,uname=None,pword=None):
-		try: del sesh['currUser']
-		except: pass
+		print 1
+		try: 
+			del sesh['currUser']
+			print 2
+		except: 
+			pass
+			
 		if uname==None or pword==None: return self.index()
+		print 3
 		uname,pword=str(uname),str(pword)
+		print 4
 		lookup=list(c['music']['users'].find({'username':str(uname)}))
+		print 'lookup',lookup
 		if len(lookup)!=0: return self.index()
 		c['data']['users'].insert({'username':uname,'password':pword})	
 		c['music']['users'].insert({'username':uname,'password':pword,'dateAdded':str(datetime.datetime.now()),'playlists':[],'score':0})

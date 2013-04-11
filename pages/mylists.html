@@ -113,7 +113,7 @@
 		<h4>Create List:</h4>
 		<!--<form action="/createList" method="POST" class="aligned">-->
 		<form name="createForm" action="" class="aligned">
-			list name: <input type="text" id="listname" autocomplete="off"><br>
+			list name: <input type="text" id="listname-c" autocomplete="off"><br>
 			genre1: <input type="text" id="g1" autocomplete="off"><br>
 			genre2: <input type="text" id="g2" autocomplete="off"><br>
 			vibe1: <input type="text" id="v1" autocomplete="off"><br>
@@ -126,13 +126,13 @@
                 $(function(){
 		$(".createFormButton").click(function()
                 {
-			var listname = $("#listname").val();
+			var listname = $("#listname-c").val();
 			var g1=$("#g1").val();
 			var g2=$("#g2").val();
 			var v1=$("#v1").val();
 			var v2=$("#v2").val();
 			var v3=$("#v3").val();
-                        var dataString='listname='+listname+'&g1='+g1+'&g2'+g2+'&v1='+v1+'&v2='+v2+'&v3='+v3;
+                        var dataString='listname='+listname+'&g1='+g1+'&g2='+g2+'&v1='+v1+'&v2='+v2+'&v3='+v3;
                         $.ajax({
                                 type: "POST",
                                 url: "/createList",

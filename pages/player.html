@@ -9,7 +9,7 @@
 
 <link rel="stylesheet" type="text/css" href="/static/style.css" />
 <script type="text/javascript" src="/static/jquery-1.7.1.min.js"></script>
-<script src="http://www.jacobra.com/jquery.tubeplayer.min.js" type="text/javascript"></script>
+<script src="http://www.jacobra.com:8080/static/jquery.tubeplayer.min.js" type="text/javascript"></script>
 <script type="text/javascript" src="/static/jquery.masonry.min.js"></script>
 
 infogoeshere
@@ -43,12 +43,29 @@ infogoeshere
 		onUnMute: function(){} // after the player is unmuted
 	});
 
+	function playerSkip()
+	{
+		currSongIndex=currSongIndex+1;
+                if (currSongIndex>=max) { currSongIndex=0;}
+                jQuery("#youtube-player-container").tubeplayer("play",songs[currSongIndex]);
+                document.getElementById('songinfoLabel').innerHTML = songText[currSongIndex];
+
+	}
+
 	function playerNext()
 	{
+		dataString='song='+songs[currSongIndex]
 		currSongIndex=currSongIndex+1;
 		if (currSongIndex>=max) { currSongIndex=0;}
 		jQuery("#youtube-player-container").tubeplayer("play",songs[currSongIndex]);
 		document.getElementById('songinfoLabel').innerHTML = songText[currSongIndex];
+			
+		$.ajax({
+	                type: "POST",
+                        url: "/incrementSong",
+                        data: dataString,
+                });
+
 
 	}
 

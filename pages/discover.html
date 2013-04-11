@@ -19,11 +19,30 @@ discovergoeshere
 </div>
 
 <div class="box col2">
-<form action="/discover" method="POST">
-<input type="text" name="query" autocomplete="off"> 
-<input type="submit" value="Search"><br>
+<form action="" name='searchForm'>
+<input type="text" id="query" autocomplete="off"> 
+<input type="submit" value="Search" class='searchButton'><br>
 </form>
 </div>
+
+<script text="text/javascript">
+                $(function(){
+                $(".searchButton").click(function()
+                {
+                        var query = $("#query").val();
+                        var dataString='query='+query;
+                        $.ajax({
+                                type: "POST",
+                                url: "/discover",
+                                data: dataString
+                        });
+                        loadPage("0");
+                        return false;
+                });
+                });
+                </script>
+
+
 </div>
 
 
