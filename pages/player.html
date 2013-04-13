@@ -54,7 +54,7 @@ infogoeshere
 
 	function playerNext()
 	{
-		dataString='song='+songs[currSongIndex]
+		dataString='songURL='+songs[currSongIndex]
 		currSongIndex=currSongIndex+1;
 		if (currSongIndex>=max) { currSongIndex=0;}
 		jQuery("#youtube-player-container").tubeplayer("play",songs[currSongIndex]);
