@@ -1,11 +1,30 @@
 <html>
 	<head>
 		<title> Edit </title>
-		<!--
-		<link href="http://fonts.googleapis.com/css?family=Oswald" rel="stylesheet" type="text/css" />
-		<link rel="stylesheet" type="text/css" href="http://www.jacobra.com/style.css" />
-		<script type="text/javascript" src="http://www.jacobra.com/jquery-1.7.1.min.js"></script>
-                <script type="text/javascript" src="http://www.jacobra.com/jquery.dropotron-1.0.js"></script>-->
+
+		<script type="text/javascript">
+		$(function(){
+
+                        $("#container2").masonry({
+                                itemSelector: ".box",
+                                columnWidth: 500
+                        });
+
+                });
+
+		function removeSong(url)
+		{
+			var dataString='url='+url;
+			$.ajax({
+				type: "POST",
+				url: "/removeSong",
+				data: dataString
+			});
+			return false;
+		}
+
+	
+                </script>
 	</head>
 
 	<body>
@@ -13,10 +32,13 @@
                 <div id="content">
                 <div class="box">
                 <h2>Edit</h2>
-                <p name=content>
-			Edit Page!						           </p>
+			<div id="container2"><div class="box col1">
+			<div class="aligned">
+			editgoeshere
+			</div>
+			<div class="box col2"></div>
+			</div></div>
                 </div>
                 </div>
-                <br class="clearfix" />
 	</body>
 </html>

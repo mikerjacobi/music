@@ -65,12 +65,32 @@ class Index(object):
 		return output
 	player.exposed=True
 
-	def edit(self):
+	def edit(self,listname=None):
+		try: 
+			data={}
+			data['author']=sesh['currUser']
+			data['listname']=sesh['editlist']
+		except: return self.index(t=3)
 		output=''
                 f=open(webpageDirectory+'edit.html','r')
 		for l in f:
-			if '123123' in l:
-				pass
+			if 'editgoeshere' in l:
+				
+				output+="playlist: %s (<a href='#' onclick=''>delete playlist</a>)<br><br>"%(sesh['editlist'])
+				data=list(c['music']['playlists'].find(data))[0]
+				template='%s: <input id="%s" type="text" value="%s"></input>\n<br>'
+				output+=template%('genre 1',data['g1'],data['g1'])
+				output+=template%('genre 2',data['g2'],data['g2'])
+				output+=template%('vibe 1',data['v1'],data['v1'])
+				output+=template%('vibe 2',data['v2'],data['v2'])
+				output+=template%('vibe 3',data['v3'],data['v3'])
+
+				output+='<br> songs: <br>'
+				songs,i=data['songs'],1
+				for song in songs.keys():
+					songData=list(c['music']['songs'].find({'url':song}))[0]		
+					output+="%d: %s by %s (<a href='/index?t=4&editlist=%s' onclick='removeSong(\"%s\")'>remove</a>)<br>\n"%(i,songData['songname'],songData['artist'],sesh['editlist'],str(song))
+					i+=1
 			else:
 				output+=l
 		return output
@@ -121,11 +141,12 @@ class Index(object):
 		return output
 	discover.exposed=True
 
-	def index(self,t=1,author=None,playlist=None,songNumber=0):
+	def index(self,t=1,author=None,playlist=None,songNumber=0,editlist=None):
 		sesh['songNumber']=str(songNumber)
                 if playlist!=None and author!=None:
                         sesh['playlist']=str(playlist)
 			sesh['author']=str(author)
+		if editlist!=None: sesh['editlist']=str(editlist)
 
 		output=''
                 f=open(webpageDirectory+'main.html','r').read().split('\n')
@@ -144,9 +165,18 @@ class Index(object):
 			currPlaylist['author']=sesh['author']
 			currPlaylist['listname']=sesh['playlist']
 			c['music']['playlists'].update(currPlaylist,{'$inc':{'totalSongListens':1, 'songs.%s'%songURL:1}})
-		
-			
 	incrementSong.exposed=True
+
+	def deletePlaylist(self):
+		pass
+	deletePlaylist.exposed=True
+
+	def removeSong(self, url=None):
+		if url!=None:
+			url=str(url)
+			c['music']['playlists'].update({'author':sesh['currUser'],'listname':sesh['editlist']},{'$unset':{'songs.%s'%url:1}})
+			print 'removed %s'%url
+	removeSong.exposed=True
 
 	def testing(self):
                 output=''
@@ -206,7 +236,7 @@ class Index(object):
 						playlistName=playlist['listname']
                                                 #output+="<button onclick='viewPlaylist(\"%s\")'> <b>%s</b> </button> <div class='listData' id='%sDiv' > </div>\n"%(playlistName,playlistName,playlistName)
 						view="<label onclick='viewPlaylist(\"%s\")'> (view) </label>\n"%(playlistName)
-						edit='(<a href="/edit?">edit</a>)\n'
+						edit='(<a href="/index?t=4&editlist=%s">edit</a>)\n'%(playlistName)
 						output+="<label onclick='viewPlaylist(\"%s\")'> <b>%s</b> </label> %s %s <div class='listData' id='%sDiv' > </div>\n"%(playlistName,playlistName,view,edit,playlistName)
                                                 javascript+="playlists[\"%s\"]=\""%(playlistName)
                                                 #songs=list(c[sesh['currUser']]["lists."+playlist].find())
