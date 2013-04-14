@@ -7,10 +7,23 @@
 
                         $("#container2").masonry({
                                 itemSelector: ".box",
+                                columnWidth: 300
+                        });
+			$("#container3").masonry({
+                                itemSelector: ".box2",
                                 columnWidth: 500
                         });
 
                 });
+
+		function removePlaylist()
+		{
+			$.ajax({
+				type: "POST",
+				url: "/removePlaylist"
+			});
+			return false;
+		}
 
 		function removeSong(url)
 		{
@@ -35,8 +48,11 @@
 			<div id="container2"><div class="box col1">
 			<div class="aligned">
 			editgoeshere
+			</div></div>
+			<div id="container3">
+			<div class="box col2">
+			songgoeshere
 			</div>
-			<div class="box col2"></div>
 			</div></div>
                 </div>
                 </div>

@@ -73,10 +73,10 @@ class Index(object):
 		except: return self.index(t=3)
 		output=''
                 f=open(webpageDirectory+'edit.html','r')
+		songs={}
 		for l in f:
 			if 'editgoeshere' in l:
-				
-				output+="playlist: %s (<a href='#' onclick=''>delete playlist</a>)<br><br>"%(sesh['editlist'])
+				output+="<h4 align='left'>playlist: %s </h4>(<a  href='/index?t=2' onclick='removePlaylist()'>delete playlist</a>)<br>"%(sesh['editlist'])
 				data=list(c['music']['playlists'].find(data))[0]
 				template='%s: <input id="%s" type="text" value="%s"></input>\n<br>'
 				output+=template%('genre 1',data['g1'],data['g1'])
@@ -85,12 +85,15 @@ class Index(object):
 				output+=template%('vibe 2',data['v2'],data['v2'])
 				output+=template%('vibe 3',data['v3'],data['v3'])
 
-				output+='<br> songs: <br>'
-				songs,i=data['songs'],1
+				songs=data['songs']
+			elif 'songgoeshere' in l:
+				i=1
+				output+='<h4>songs: </h4>'
 				for song in songs.keys():
 					songData=list(c['music']['songs'].find({'url':song}))[0]		
 					output+="%d: %s by %s (<a href='/index?t=4&editlist=%s' onclick='removeSong(\"%s\")'>remove</a>)<br>\n"%(i,songData['songname'],songData['artist'],sesh['editlist'],str(song))
 					i+=1
+				 
 			else:
 				output+=l
 		return output
@@ -167,15 +170,14 @@ class Index(object):
 			c['music']['playlists'].update(currPlaylist,{'$inc':{'totalSongListens':1, 'songs.%s'%songURL:1}})
 	incrementSong.exposed=True
 
-	def deletePlaylist(self):
-		pass
-	deletePlaylist.exposed=True
+	def removePlaylist(self):
+		c['music']['playlists'].remove({'author':sesh['currUser'],'listname':sesh['editlist']})
+	removePlaylist.exposed=True
 
 	def removeSong(self, url=None):
 		if url!=None:
 			url=str(url)
 			c['music']['playlists'].update({'author':sesh['currUser'],'listname':sesh['editlist']},{'$unset':{'songs.%s'%url:1}})
-			print 'removed %s'%url
 	removeSong.exposed=True
 
 	def testing(self):
@@ -222,6 +224,7 @@ class Index(object):
 		
                 output=''
                 f=open(webpageDirectory+'mylists.html','r').read().split('\n')
+		listnames=[]
                 for l in f:
 			if 'viewlists' in l:
                                 #playlists=c[sesh['currUser']].collection_names()
@@ -234,10 +237,13 @@ class Index(object):
                                                 #if playlist=='system.indexes':continue
                                                 #playlist=playlist.split('.')[1]
 						playlistName=playlist['listname']
+						listnames.append(playlistName)
                                                 #output+="<button onclick='viewPlaylist(\"%s\")'> <b>%s</b> </button> <div class='listData' id='%sDiv' > </div>\n"%(playlistName,playlistName,playlistName)
 						view="<label onclick='viewPlaylist(\"%s\")'> (view) </label>\n"%(playlistName)
 						edit='(<a href="/index?t=4&editlist=%s">edit</a>)\n'%(playlistName)
-						output+="<label onclick='viewPlaylist(\"%s\")'> <b>%s</b> </label> %s %s <div class='listData' id='%sDiv' > </div>\n"%(playlistName,playlistName,view,edit,playlistName)
+						play="http://jacobra.com:8080?t=1&author=%s&playlist=%s"%(sesh['currUser'],playlistName)
+						#output+="<label onclick='viewPlaylist(\"%s\")'> <b>%s</b> </label> %s %s <div class='listData' id='%sDiv' > </div>\n"%(playlistName,playlistName,view,edit,playlistName)
+						output+="<a href='%s'> <b>%s</b> </a> %s %s <div class='listData' id='%sDiv' > </div>\n"%(play,playlistName,view,edit,playlistName)
                                                 javascript+="playlists[\"%s\"]=\""%(playlistName)
                                                 #songs=list(c[sesh['currUser']]["lists."+playlist].find())
 						songs=playlist['songs']
@@ -261,6 +267,11 @@ class Index(object):
                                 #continue
                                 try: output+=javascript
 				except: pass
+			elif 'listdropdown' in l:
+				output+='listname: <select id=\"listname\">\n<br>'
+				for playlist in listnames:
+					output+="<option value='%s'>%s</option>\n<br>"%(playlist,playlist)
+				output+="</select>\n<br>"
 			else:
                         	output+=l
                 return output

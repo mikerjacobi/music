@@ -227,6 +227,11 @@ ul h4 {
 
 }
 
+#listname{
+	width: 110px;
+	text-align: right;
+}
+
 #mainwrapper {
         width: 900px;
         position: relative;
